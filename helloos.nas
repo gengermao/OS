@@ -1,29 +1,29 @@
 ; hello-os
 ; TAB=4
 
-; �ȉ�?�i��?�yFAT12�i��???�p��?
+; 以下这段是标准FAT12格式软盘专用代码
 
 		DB		0xeb, 0x4e, 0x90
-		DB		"HELLOIPL"		; ??�於�́i�C�ӎ������Cansi?�C8��?�j
-		DW		512				; ���召�i�K??512��?�j
-		DB		1				; �ƓI�召�i�K??1�j
-		DW		1				; FAT�I�N�n�ʒu�i��ʘ���꘢���?�n�j
-		DB		2				; FAT�I�����i�K??2�j
-		DW		224				; ����?�I�召�i��ʐ�224?�j
-		DW		2880			; ?��?�I�召�i�K?��2880���j
-		DB		0xf0			; ��???�i�K?��0xf0�j
-		DW		9				; FAT�I?�x�i�K?��9���j
-		DW		18				; 1�������L�{�����i�K?��18�j
-		DW		2				; ��?���i�K?��2�j
-		DD		0				; �s�g�p����i��0�j
-		DD		2880			; �d�ʈꎟ��?�召
-		DB		0,0,0x29		; ��?�s��
-		DD		0xffffffff		; ��?
-		DB		"HELLO-OS   "	; ��?�I���́i11��?�j
-		DB		"FAT12   "		; ��?�i�����́i8��?�j
-		RESB	18				; ��o18��?
+		DB		"HELLOIPL"		; 启动区名称（任意字符串，ansi码，8字节）
+		DW		512				; 扇区大小（必须为512字节）
+		DB		1				; 簇的大小（必须为1）
+		DW		1				; FAT的起始位置（一般从第一个扇区开始）
+		DB		2				; FAT的个数（必须为2）
+		DW		224				; 根目录的大小（一般是224项）
+		DW		2880			; 该磁盘的大小（必须是2880扇区）
+		DB		0xf0			; 磁盘种类（必须是0xf0）
+		DW		9				; FAT的长度（必须是9扇区）
+		DW		18				; 1个磁道有几个扇区（必须是18）
+		DW		2				; 磁头数（必须是2）
+		DD		0				; 不使用分区（是0）
+		DD		2880			; 重写一次磁盘大小
+		DB		0,0,0x29		; 意义不明
+		DD		0xffffffff		; 卷标
+		DB		"HELLO-OS   "	; 磁盘的名称（11字节）
+		DB		"FAT12   "		; 磁盘格式名称（8字节）
+		RESB	18				; 空出18字节
 
-; �����{��
+; 程序本体
 
 		DB		0xb8, 0x00, 0x00, 0x8e, 0xd0, 0xbc, 0x00, 0x7c
 		DB		0x8e, 0xd8, 0x8e, 0xc0, 0xbe, 0x74, 0x7c, 0x8a
@@ -31,18 +31,18 @@
 		DB		0xb4, 0x0e, 0xbb, 0x0f, 0x00, 0xcd, 0x10, 0xeb
 		DB		0xee, 0xf4, 0xeb, 0xfd
 
-; �M��?������
+; 信息显示部分
 
-		DB		0x0a, 0x0a		; 2��?�s
+		DB		0x0a, 0x0a		; 2个换行
 		DB		"hello, welcome to use geng's OS"
-		DB		0x0a			; ?�s
+		DB		0x0a			; 换行
 		DB		0
 
-		RESB	0x1fe-$			; �U��0x00,����0x001fe
+		RESB	0x1fe-$			; 填写0x00,直到0x001fe
 
 		DB		0x55, 0xaa
 
-; �ȉ���??��ȊO�����I?�o
+; 以下是启动区以外部分的输出
 
 		DB		0xf0, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00
 		RESB	4600
