@@ -1,5 +1,5 @@
 
-# д╛хо
+# д╛
 
 default :
 	../z_tools/make.exe img
