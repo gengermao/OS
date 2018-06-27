@@ -7,7 +7,7 @@
 
 		JMP		entry
 		DB		0x90
-		DB		"HELLOIPL"		; 启动区名称（任意字符串，ansi码，8字节）
+		DB		"GENGSGOS"		; 启动区名称（任意字符串，ansi码，8字节）
 		DW		512				; 扇区大小（必须为512字节）
 		DB		1				; 簇的大小（必须为1）
 		DW		1				; FAT的起始位置（一般从第一个扇区开始）
@@ -33,8 +33,27 @@ entry:
 		MOV		SS,AX			;初始化栈空间
 		MOV		SP,0x7c00
 		MOV		DS,AX
-		MOV		ES,AX
 		
+;设置在读取启动区后要读取的下一个扇区信息
+
+		MOV 	AX,0x0820		;设置缓冲区地址，把这个扇区信息放在这个缓冲内存地址
+		MOV		ES,AX
+		MOV		CH,0			;柱面0
+		MOV		DH,0			;磁头0
+		MOV 	CL,2			;扇区2
+		
+		MOV		AH,0x02			;读盘
+		MOV 	AL,1			;1个扇区
+		MOV 	BX,0
+		MOV 	DL,0x00			;A驱动器
+		INT 	0x13  			;调用磁盘BIOS
+		JC		error
+		
+fin:
+		HLT						;让CPU停止，等待指令
+		JMP		fin				;无限循环
+
+error:
 		MOV 	SI,msg
 putloop:
 		MOV 	AL,[SI]
@@ -46,13 +65,9 @@ putloop:
 		MOV		BX,15			;指定字符颜色
 		INT		0x10			;调用显卡
 		JMP		putloop
-fin:
-		HLT						;让CPU停止，等待指令
-		JMP		fin				;无限循环
-
 msg:
 		DB		0x0a, 0x0a
-		DB		"hello, welcome to use geng's OS"
+		DB		"load error"
 		DB		0x0a
 		DB		0
 		
