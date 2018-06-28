@@ -48,7 +48,21 @@ entry:
 		MOV 	DL,0x00			;A驱动器
 		INT 	0x13  			;调用磁盘BIOS
 		JC		error
-		
+		MOV 	SI,0
+retry:
+		MOV 	AH,0x02
+		MOV 	AL,1			;1个扇区
+		MOV 	BX,0
+		MOV 	DL,0x00			;A驱动器
+		INT 	0x13  			;调用磁盘BIOS
+		JNC		fin				;没出错就跳到fin
+		ADD 	SI,1			;出错了就尝试5次
+		CMP		SI,5
+		JAE 	error
+		MOV		AH,0x00			;重置驱动器
+		MOV 	DL,0x00
+		INT 	0x13			;重试之前进行系统复位
+		JMP		retry			;跳转，重新尝试
 fin:
 		HLT						;让CPU停止，等待指令
 		JMP		fin				;无限循环
