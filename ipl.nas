@@ -42,15 +42,9 @@ entry:
 		MOV		DH,0			;磁头0
 		MOV 	CL,2			;扇区2
 		
-		MOV		AH,0x02			;读盘
-		MOV 	AL,1			;1个扇区
-		MOV 	BX,0
-		MOV 	DL,0x00			;A驱动器
-		INT 	0x13  			;调用磁盘BIOS
-		JC		error
 		MOV 	SI,0
 retry:
-		MOV 	AH,0x02
+		MOV 	AH,0x02			;读盘模式
 		MOV 	AL,1			;1个扇区
 		MOV 	BX,0
 		MOV 	DL,0x00			;A驱动器
