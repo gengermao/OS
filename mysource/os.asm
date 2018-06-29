@@ -33,12 +33,13 @@ org		0x7c00
 			
 			mov 	si,msg
 	outputloop:
-			mov 	ah,0x0e
 			mov 	al,[si]
-			mov 	bx,15		;mov bh,0 mov bl,15/将这两句合二为一
-			cmp 	al,0
+			cmp		al,0
 			je		fin
-			int 	0x10
+			
+			mov 	ah,0x0e
+			mov 	bx,15
+			int		0x10
 			
 			add 	si,1
 			jmp		outputloop
