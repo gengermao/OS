@@ -29,9 +29,23 @@ org		0x7c00
 			mov 	DS,ax		;初始化DS寄存器
 			mov 	ss,ax
 			mov 	sp,0x7c00	;初始化ss寄存器
+			
+			mov 	ax,0x820
 			mov 	es,ax		;初始化es寄存器
 			
-			mov 	si,msg
+			;设置相关参数
+			mov		ah,0x02		;模式
+			mov 	dl,0x00		;读取哪个盘
+			mov		al,1		;读取长度
+			mov 	ch,0		;柱面
+			mov 	dh,0		;磁头
+			mov 	cl,2		;扇区
+			mov		bx,0			
+			int		0x13
+			jc		error
+			
+	error:
+			mov  	si,msg
 	outputloop:
 			mov 	al,[si]
 			cmp		al,0
