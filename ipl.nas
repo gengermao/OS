@@ -1,6 +1,6 @@
 ; hello-os
 ; TAB=4
-		
+		CYLS	EQU		10	
 		ORG 0x7c00
 
 ; 以下这段是标准FAT12格式软盘专用代码
@@ -41,7 +41,8 @@ entry:
 		MOV		CH,0			;柱面0
 		MOV		DH,0			;磁头0
 		MOV 	CL,2			;扇区2
-		
+
+readloop:
 		MOV 	SI,0
 retry:
 		MOV 	AH,0x02			;读盘模式
@@ -49,7 +50,7 @@ retry:
 		MOV 	BX,0
 		MOV 	DL,0x00			;A驱动器
 		INT 	0x13  			;调用磁盘BIOS
-		JNC		fin				;没出错就跳到fin
+		JNC		next			;没出错就跳到fin
 		ADD 	SI,1			;出错了就尝试5次
 		CMP		SI,5
 		JAE 	error
@@ -57,6 +58,21 @@ retry:
 		MOV 	DL,0x00
 		INT 	0x13			;重试之前进行系统复位
 		JMP		retry			;跳转，重新尝试
+
+next:
+		MOV 	AX,ES			;内存地址后移512字节
+		ADD		AX,0x20			
+		MOV 	ES,AX			;给ES增加512的方法
+		ADD		CL,1			;扇区号变大，直至18
+		CMP		CL,18			
+		MOV 	CL,1			;超过18后，回到1，换另一个磁头
+		ADD		DH,1
+		CMP		DH,2			
+		JB		readloop
+		MOV		DH,0			;结束一个磁头的周期后，增加柱面号
+		ADD		CH,1
+		CMP		CH,CYLS
+		JB		readloop
 fin:
 		HLT						;让CPU停止，等待指令
 		JMP		fin				;无限循环
