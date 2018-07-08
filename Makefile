@@ -11,7 +11,7 @@ DEL      = del
 default :
 	$(MAKE) img
 
-# ƒtƒ@ƒCƒ‹¶¬‹K‘¥
+# ¶¬‹K‘¥
 
 ipl.bin : ipl.nas Makefile
 	$(NASK) ipl.nas ipl.bin ipl.lst
