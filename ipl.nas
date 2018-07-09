@@ -73,6 +73,10 @@ next:
 		ADD		CH,1
 		CMP		CH,CYLS
 		JB		readloop
+		
+		;跳转到系统程序所在的内存地址
+		JMP		0xc200
+		
 fin:
 		HLT						;让CPU停止，等待指令
 		JMP		fin				;无限循环
