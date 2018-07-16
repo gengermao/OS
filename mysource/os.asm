@@ -30,13 +30,14 @@ org		0x7c00
 			mov 	ss,ax
 			mov 	sp,0x7c00	;初始化ss寄存器
 			
-			mov 	ax,0x820
+			mov  	ax,0x820
 			mov 	es,ax		;初始化es寄存器
 			mov 	ch,0		;柱面
 			mov 	dh,0		;磁头
 			mov 	cl,2		;扇区
 			
-			mov		si,0
+	readloop:
+			mov		si,0		;如果把si=0,放在next里执行，就会有两句相同的该语句了。
 			
 	;设置相关参数
 	retry:
@@ -45,21 +46,38 @@ org		0x7c00
 			mov		al,1		;读取长度
 			mov		bx,0			
 			int		0x13
-			jnc		fin
-			add		si,1
+			jnc		next
+			add 	si,1
 			cmp		si,5
 			jae		error
 			mov 	ah,0x00
-			mov 	dl,0x00
+			mov  	dl,0x00
 			int		0x13
 			jmp		retry
+	
+	next:
+			;mov si,0 放在此处不好  
+			mov		ax,es
+			add		ax,0x0020
+			mov		es,ax
+			add		cl,1
+			cmp		cl,18
+			jbe		readloop
+			add		dh,1
+			cmp 	dh,2
+			jb		readloop
+			mov		dh,0
+			add		ch,1
+			cmp		ch,10
+			jb		readloop
 			
 	error:
 			mov  	si,msg
 	outputloop:
+			
 			mov 	al,[si]
 			cmp		al,0
-			je		fin
+					je		fin
 			
 			mov 	ah,0x0e
 			mov 	bx,15
@@ -75,8 +93,3 @@ org		0x7c00
 			db		"welcome to geng's OS"
 			db  	0x0a
 			db		0
-			
-			
-			
-			
-			
