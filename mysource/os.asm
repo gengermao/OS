@@ -71,6 +71,9 @@ org		0x7c00
 			cmp		ch,10
 			jb		readloop
 			
+			;跳转到操作系统的代码处
+			JMP		0xc200
+			
 	error:
 			mov  	si,msg
 	outputloop:
