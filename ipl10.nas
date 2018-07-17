@@ -1,7 +1,7 @@
 ; hello-os
 ; TAB=4
 		CYLS	EQU		10	
-		ORG 0x7c00
+		ORG 	0x7c00
 
 ; 以下这段是标准FAT12格式软盘专用代码
 
@@ -61,10 +61,11 @@ retry:
 
 next:
 		MOV 	AX,ES			;内存地址后移512字节
-		ADD		AX,0x20			
+		ADD		AX,0x0020			
 		MOV 	ES,AX			;给ES增加512的方法
 		ADD		CL,1			;扇区号变大，直至18
-		CMP		CL,18			
+		CMP		CL,18
+		JBE		readloop
 		MOV 	CL,1			;超过18后，回到1，换另一个磁头
 		ADD		DH,1
 		CMP		DH,2			
@@ -74,13 +75,10 @@ next:
 		CMP		CH,CYLS
 		JB		readloop
 		
+		MOV		[0x0ff0],CH
 		;跳转到系统程序所在的内存地址
 		JMP		0xc200
 		
-fin:
-		HLT						;让CPU停止，等待指令
-		JMP		fin				;无限循环
-
 error:
 		MOV 	SI,msg
 putloop:
@@ -93,6 +91,11 @@ putloop:
 		MOV		BX,15			;指定字符颜色
 		INT		0x10			;调用显卡
 		JMP		putloop
+
+fin:
+		HLT						;让CPU停止，等待指令
+		JMP		fin				;无限循环
+
 msg:
 		DB		0x0a, 0x0a
 		DB		"load error"
