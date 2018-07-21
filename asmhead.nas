@@ -29,10 +29,6 @@ DSKCAC0	EQU		0x00008000		; ディスクキャッシュの場所（リアルモ�
 		MOV 	AH,0x02
 		INT		0x16
 		MOV		[LEDS],AL
-		
-fin:
-		HLT
-		JMP		fin
 
 ; PICが一切の割り込みを受け付けないようにする
 ;	AT互換機の仕様では、PICの初期化をするなら、
